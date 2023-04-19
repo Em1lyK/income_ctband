@@ -13,6 +13,7 @@ country <- c('United Kingdom', 'England', 'Wales', 'Scotland', 'Northern Ireland
 ct_bands <- c('band_a', 'band_b', 'band_c', 'band_d', 'band_e', 'band_f', 'band_g', 'band_h', 'total')
 bandsa_c <- c('band_a', 'band_b', 'band_c')
 region_code <- c('NE', 'NW', 'YH', 'EM', 'WM', 'E', 'L', 'SE', 'SW')
+ne_nw <- c('NE', 'NW')
 
 
 #Read in the income data 
@@ -38,6 +39,10 @@ income <- income %>%
 
 #add region codes
 income$re_code <- region_code
+income <- income %>% 
+  select(re_code, everything()) %>%
+  select(-region) %>% 
+  rename(region = re_code)
 
 #read in taxbase data
 
@@ -54,6 +59,8 @@ ctb_region <- ctb %>%
 #add AtoC and DtoH
 ctb_region <- ctb_region %>% rowwise() %>% mutate(a_c = sum(band_a, band_b, band_c, na.rm = TRUE),
                                                   d_h =  sum(band_d, band_e, band_f, band_g, band_h, na.rm=TRUE))
+ctb_region <- ctb_region %>% 
+  mutate(total = rowSums(across(where(is.numeric))))
 
 #####analysis####
 
@@ -74,5 +81,43 @@ income_hh <- income_hh %>%
          percent_more_1000 = more_1000/sample_size)
 
 #Estimation of households in each region with less than 1000 and more than 1000
-hh_estimate <- 
+#isolate percentage columns
+estimate_hh <- income_hh %>% 
+  select(region, percent_less_1000, percent_more_1000)
+
+#add total tax base columns
+estimate_hh <- left_join(estimate_hh, ctb_region)
+
+estimate_hh <- estimate_hh %>% 
+  select(-contains("band"))
+
+#estimate households about and below 1000 per week
+estimate_hh <- estimate_hh %>% 
+  mutate(hh_less = percent_less_1000*total)
+
+estimate_hh <- estimate_hh %>% 
+  mutate(hh_more = percent_more_1000*total) %>% 
+  select(-contains("percent"))
+
+
+#make simultaneous equation matricies 
+parhh_n_df <- estimate_hh %>% 
+  filter(region %in% ne_nw) %>% 
+  select(a_c, d_h)
+
+parhh_n_mat <- data.matrix(parhh_n_df)
+
+parin_n_df<- estimate_hh %>% 
+  filter(region %in% ne_nw) %>% 
+  select(hh_less, hh_more)
+
+parin_n_mat <- data.matrix(parin_n_df)
+
+hh_dist_nenw <- solve(parhh_n_mat, parin_n_mat)
+
+write_csv(parhh_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ households_nenw.csv")
+write_csv(parin_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ incomehh_nenw.csv")
+
+
+
 
