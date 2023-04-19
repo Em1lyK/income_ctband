@@ -1,5 +1,5 @@
 #Emily Keenan
-#18/04/2023
+#19/04/2023
 #Code to estimate the income distribution in council tax bands 
 
 library(tidyverse)
@@ -37,8 +37,7 @@ income <- income %>%
   filter(!(region %in% country))
 
 #add region codes
-income <- income %>%
-  add_row(region_code)
+income$re_code <- region_code
 
 #read in taxbase data
 
