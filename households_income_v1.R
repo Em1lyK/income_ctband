@@ -103,7 +103,7 @@ estimate_hh <- estimate_hh %>%
   select(-contains("percent"))
 
 
-#make simultaneous equation matricies 
+#make simultaneous equation matricies: northe east north west
 parhh_n_df <- estimate_hh %>% 
   filter(region %in% ne_nw) %>% 
   select(a_c, d_h)
@@ -117,6 +117,7 @@ parin_n_df<- estimate_hh %>%
 parin_n_mat <- data.matrix(parin_n_df)
 
 hh_dist_nenw <- solve(parhh_n_mat, parin_n_mat)
+
 
 #(parhh_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ households_nenw.csv")
 #write_csv(parin_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ incomehh_nenw.csv")
