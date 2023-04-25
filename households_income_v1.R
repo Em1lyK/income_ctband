@@ -1,6 +1,7 @@
 #Emily Keenan
-#19/04/2023
+#25/04/2023
 #Code to estimate the income distribution in council tax bands 
+#fix the doubling income hh catagories
 
 library(tidyverse)
 library(readxl)
@@ -59,8 +60,10 @@ ctb_region <- ctb %>%
 #add AtoC and DtoH
 ctb_region <- ctb_region %>% rowwise() %>% mutate(a_c = sum(band_a, band_b, band_c, na.rm = TRUE),
                                                   d_h =  sum(band_d, band_e, band_f, band_g, band_h, na.rm=TRUE))
+
+#calc total taxbase
 ctb_region <- ctb_region %>% 
-  mutate(total = rowSums(across(where(is.numeric))))
+  mutate(total = a_c + d_h)
 
 #####analysis####
 
@@ -91,7 +94,7 @@ estimate_hh <- left_join(estimate_hh, ctb_region)
 estimate_hh <- estimate_hh %>% 
   select(-contains("band"))
 
-#estimate households about and below 1000 per week
+#estimate households above and below 1000 per week
 estimate_hh <- estimate_hh %>% 
   mutate(hh_less = percent_less_1000*total)
 
@@ -115,8 +118,8 @@ parin_n_mat <- data.matrix(parin_n_df)
 
 hh_dist_nenw <- solve(parhh_n_mat, parin_n_mat)
 
-write_csv(parhh_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ households_nenw.csv")
-write_csv(parin_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ incomehh_nenw.csv")
+#(parhh_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ households_nenw.csv")
+#write_csv(parin_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ incomehh_nenw.csv")
 
 
 
