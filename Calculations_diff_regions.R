@@ -4,6 +4,7 @@ ne_nw <- c('NE', 'NW')
 em_yh <- c('EM', 'YH')
 se_e <- c('SE', 'E')
 sw_wm <- c('SW', 'WM')
+l_wm <- c('L', 'WM')
 
 ##north east north west
 
@@ -74,6 +75,21 @@ swwm_in_mat <- data.matrix(swwm_in_df)
 
 swwm_dist <- solve(swwm_hh_mat, swwm_in_mat)  
 
+#London and west midlands?
+
+lwm_hh_df <- estimate_hh %>% 
+  filter(region %in% l_wm) %>% 
+  select(a_c, d_h)
+
+lwm_hh_mat <- data.matrix(lwm_hh_df)
+
+lwm_in_df <- estimate_hh %>%
+  filter(region %in% l_wm) %>% 
+  select(hh_less, hh_more)
+
+lwm_in_mat <- data.matrix(lwm_in_df)
+
+lwm_dist <- solve(lwm_hh_mat, lwm_in_mat) 
 
 
 
