@@ -78,7 +78,7 @@ income_hh <- income_hh %>% rowwise() %>%
 
 #calculating percentage less than 1000 per week and more
 income_hh <- income_hh %>% rowwise() %>% mutate(less_1000 = sum(under_200, `200_but_less_than_400`, `400_but_less_than_600`, `600_but_less_than_800`, `800_but_less_than_1_000`, na.rm = TRUE),
-                                                more_1000 = sum(`1_000_but_less_than_1_200`, `1_200_but_less_than_1_400`, `1_400_but_less_than_1_600`,`1_600_but_less_than_1_800` ,`1_800_but_less_than_2_000`, `2_000_or_more`, nq.rm = TRUE))
+                                                more_1000 = sum(`1_000_but_less_than_1_200`, `1_200_but_less_than_1_400`, `1_400_but_less_than_1_600`,`1_600_but_less_than_1_800` ,`1_800_but_less_than_2_000`, `2_000_or_more`, na.rm = TRUE))
 income_hh <- income_hh %>%
   mutate(percent_less_1000 = less_1000/sample_size, 
          percent_more_1000 = more_1000/sample_size)
@@ -123,5 +123,15 @@ hh_dist_nenw <- solve(parhh_n_mat, parin_n_mat)
 #write_csv(parin_n_df, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband\\ incomehh_nenw.csv")
 
 
-
-
+# ###QA
+# qa_income_hh <- income_hh %>% 
+#   mutate(Total = select(., under_200:`2_000_or_more`) %>%  rowSums(na.rm = TRUE))
+# 
+# qa_income_hh <- income_hh %>% 
+#   mutate(Total = under_200 + `200_but_less_than_400` + `400_but_less_than_600` +`600_but_less_than_800` + `800_but_less_than_1_000` + `1_000_but_less_than_1_200` + `1_200_but_less_than_1_400` + `1_400_but_less_than_1_600` + `1_600_but_less_than_1_800` + `1_800_but_less_than_2_000` + `2_000_or_more`) %>% 
+#   mutate(Total_v2 = less_1000 + more_1000)
+# 
+# qa_income_hh <- income_hh %>% 
+#   rowwise() %>% 
+#   mutate(total = sum(across))
+#   mutate(Total = select(., under_200:`2_000_or_more`) %>%  rowSums(na.rm = TRUE))
