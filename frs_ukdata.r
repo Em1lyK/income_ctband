@@ -8,6 +8,8 @@
 library(haven)
 library(tidyverse)
 library(xlsx)
+library(readODS)
+library(janitor)
 
 #define variables to map onto encoded data
 income_levels <- c("Less 200", "200 to 400", "400 to 600", "600 to 800", "800 to 1000", "1000 to 1200", "1200 to 1400", "1400 to 1600", "1600 to 1800", "1800 to 2000", "Above 2000")
@@ -18,11 +20,21 @@ not_eng <-  c("299999999.0", "399999999.0", "499999999.0")
 #set working directory
 setwd("D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2")
 
-#data location
+#data location: family resources survey and ctb
 frs_househol <- paste0("2122_househol.dta")
+ctb_input <- "Q:\\ADD Directorate\\Local Policy Analysis\\LGF\\Council Tax\\Households Income Analysis\\Council_Taxbase_local_authority_level_data_2022 (4).ods"
 
-#read in frs data househol file
+
+#read in frs data househol file and ctb dewellings on the valuation list 
 househol_raw <- read_dta(frs_househol)
+ctb_raw <- read_ods(ctb_input, sheet = "Council_Taxbase_Data", range = "A6:N316")
+
+#clean ctb
+ctb_val <- ctb_raw %>%
+  clean_names()%>%
+  select(!notes)
+
+ctb_val <- pivot_longer(ctb_val, band_a:total)
 
 #select possible relevent variable
 #ct band, gross income from employment, total household income and household income bands
@@ -78,17 +90,47 @@ ggsave("eng.png", p)
 t_ungroup <- ungroup(t)
 write.xlsx(t_ungroup, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2\\incomedis_ctband_input.xlsx")
 
-#  incband_hh %>% 
-# group_by(CTBAND,HHINCBND) -> t2
-
-# str(t2)
-# str(incband_hh)
-
-# t2 %>% count() %>% view()
-# incband_hh %>% count() %>% view()
 
 
-#  incband_hh %>% 
-# group_by(CTBAND,HHINCBND) %>%
-# count()  %>% view()
+##########################################
+####cheking data distribution ###########
+#########################################
 
+#select only the council tax band columns
+only_ct <- incband_hh |>
+    select(SERNUM, CTBAND) |>
+    group_by(CTBAND) |>
+    count()
+#total number of houses in England in the council tax band part of the survey 
+total <- sum(only_ct$n)
+
+#calculate the percentage of households in each ct band of the frs 
+only_ct <- only_ct |>
+    mutate(dist = n/total)|>
+    filter(CTBAND != 10)
+
+only_ct <- ungroup(only_ct)
+
+#percentage of dwellings on the valuation list in each council tax band
+ctb_total <- as.numeric(ctb_val[9, 6])
+
+ctb_val <- ctb_val |>
+    filter(region == "ENG") |>
+    mutate(total = ctb_total)
+
+ctb_val <- ctb_val |>
+    mutate(dis = value/total) |>
+    filter(name != "total")
+
+comparison_df <- ctb_val$dis
+comparison_df <- cbind(comparison_df, only_ct$dist)
+comparison_df <- comparison_df |> as.tibble() %>%
+    mutate(diff = (comparison_df - V2)*100)
+
+comparison_df <- comparison_df |>
+    rename(ctb_val = comparison_df)
+
+view(comparison_df)
+view(ctb_val)
+view(only_ct)
+view(total)
