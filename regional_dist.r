@@ -98,10 +98,22 @@ compreg_dist <- compreg_dist |>
 
 ctb_regval <- ctb_val |>
     select(region, name, value) |>
-    group_by(region, name)
+    group_by(region, name) |>
+    mutate(reg_band = str_c(region, name)) |>
+    ungroup()
 
+ctb_regval <- ctb_regval |>
+    group_by(reg_band) |>
+    summarise(total = sum(value))
 
+ctb_regionhh <- data.frame(do.call('rbind', strsplit(as.character(ctb_regval$reg_band), "band_", fixed=TRUE)))
+ctb_regval <- cbind(ctb_regval, ctb_regionhh)
 
+ctb_regtot <- ctb_regval |>
+    group_by(X1) |>
+    summarise(reg_total = sum(total))
 
+view(ctb_regtot)
+view(ctb_regionhh)
 view(ctb_regval)
 view(ctb_val)
