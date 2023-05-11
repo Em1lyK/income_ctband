@@ -114,15 +114,15 @@ only_ct <- ungroup(only_ct)
 #percentage of dwellings on the valuation list in each council tax band
 ctb_total <- as.numeric(ctb_val[9, 6])
 
-ctb_val <- ctb_val |>
+ctb_engval <- ctb_val |>
     filter(region == "ENG") |>
     mutate(total = ctb_total)
 
-ctb_val <- ctb_val |>
+ctb_engval <- ctb_engval |>
     mutate(dis = (value/total)*100) |>
     filter(name != "total")
 
-comparison_df <- ctb_val$dis
+comparison_df <- ctb_engval$dis
 comparison_df <- cbind(comparison_df, only_ct$dist)
 comparison_df <- comparison_df |> as.data.frame() %>%
     mutate(banddis_diff = (comparison_df - V2))

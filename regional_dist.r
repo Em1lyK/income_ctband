@@ -73,5 +73,35 @@ count_reghh <- count_reghh |>
     select(!V2)
 
 ###################################################################
-####### comapre regional dist ##########
+###################### comapre regional dist ######################
+###################################################################
 
+### Family Resources Survey
+
+#group the df by council tax band and region 
+compreg_dist <- househol_region |>
+    group_by(CTBAND, GVTREGN) |>
+    count()
+
+#add the total number of household in each region to the df
+compreg_dist <- compreg_dist |>
+    left_join(count_reghh, by = 'GVTREGN')
+
+#calculate the percentage of househoulds in each council tax band by region
+compreg_dist <- compreg_dist |>
+    rename(no_hh = n.x, hh_region = n.y) |>
+    mutate(frs_banddis = no_hh/hh_region)
+
+#view(compreg_dist)
+
+### CTB
+
+ctb_regval <- ctb_val |>
+    select(region, name, value) |>
+    group_by(region, name)
+
+
+
+
+view(ctb_regval)
+view(ctb_val)
