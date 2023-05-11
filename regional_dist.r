@@ -21,11 +21,12 @@ region_dist <- function(a, b, c, d, reg) {
     theme(axis.text.x = element_text(angle = 90), 
     axis.ticks = element_blank())+
     facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))
-    ggsave(paste0(reg,"_hhdist.png"), d)
-    return(d)
+    ggsave(paste0("hhdist_plots\\", reg,"_hhdist.png"), d)
+   
 
 }
 
+ne <- 112000001.0
 nw <- 112000002.0
 yh <- 112000003.0
 em <- 112000004.0
@@ -40,7 +41,7 @@ sw <- 112000009.0
 househol_region <- househol_raw |>
     select(SERNUM, CTBAND, HHINCBND, GVTREGN)
 
-
+region_dist(househol_region, househol_ne, ne, plot_ne, "NE")
 region_dist(househol_region, househol_nw, nw, plot_nw, "NW")
 region_dist(househol_region, househol_yh, yh, plot_yh, "YH")
 region_dist(househol_region, househol_em, em, plot_em, "EM")
@@ -51,5 +52,26 @@ region_dist(househol_region, househol_se, se, plot_se, "SE")
 region_dist(househol_region, househol_sw, sw, plot_sw, "SW")
 
 
+#########################################################################
+##### check the number of hosueholds in each region #####################
+########################################################################
 
+count_reghh <- househol_region |>
+    select(SERNUM, GVTREGN) |>
+    group_by(GVTREGN)|>
+    count()
+
+regions <- c("NE", "NW", "YH", "EM", "WM", "EE", "L", "SE", "SW", "SCOT", "WAL", "NI")
+GVTREGN <- as.numeric(c(112000001.0, 112000002.0, 112000003.0, 112000004.0, 112000005.0, 112000006.0, 112000007.0, 112000008.0, 112000009.0, 299999999, 399999999, 499999999))
+
+region_wcode <- as.data.frame(cbind(regions, as.numeric(GVTREGN)))
+region_wcode <- transform(region_wcode, GVTREGN = as.numeric(GVTREGN))
+
+count_reghh <- left_join(count_reghh, region_wcode, by = "GVTREGN")
+
+count_reghh <- count_reghh |>
+    select(!V2)
+
+###################################################################
+####### comapre regional dist ##########
 

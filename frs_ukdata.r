@@ -21,7 +21,7 @@ not_eng <-  c("299999999.0", "399999999.0", "499999999.0")
 setwd("D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2")
 
 #data location: family resources survey and ctb
-frs_househol <- paste0("2122_househol.dta")
+frs_househol <- paste0("inputs\\2122_househol.dta")
 ctb_input <- "Q:\\ADD Directorate\\Local Policy Analysis\\LGF\\Council Tax\\Households Income Analysis\\Council_Taxbase_local_authority_level_data_2022 (4).ods"
 
 
@@ -85,10 +85,10 @@ axis.ticks = element_blank())+
 facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))
 
 #save plot
-ggsave("eng.png", p)
+#ggsave("hhdist_plots\\eng.png", p)
 #save plot input data
-t_ungroup <- ungroup(t)
-write.xlsx(t_ungroup, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2\\incomedis_ctband_input.xlsx")
+#t_ungroup <- ungroup(t)
+#write.xlsx(t_ungroup, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2\\incomedis_ctband_input.xlsx")
 
 
 
@@ -106,7 +106,7 @@ total <- sum(only_ct$n)
 
 #calculate the percentage of households in each ct band of the frs 
 only_ct <- only_ct |>
-    mutate(dist = n/total)|>
+    mutate(dist = n/total*100)|>
     filter(CTBAND != 10)
 
 only_ct <- ungroup(only_ct)
@@ -119,18 +119,21 @@ ctb_val <- ctb_val |>
     mutate(total = ctb_total)
 
 ctb_val <- ctb_val |>
-    mutate(dis = value/total) |>
+    mutate(dis = (value/total)*100) |>
     filter(name != "total")
 
 comparison_df <- ctb_val$dis
 comparison_df <- cbind(comparison_df, only_ct$dist)
-comparison_df <- comparison_df |> as.tibble() %>%
-    mutate(diff = (comparison_df - V2)*100)
+comparison_df <- comparison_df |> as.data.frame() %>%
+    mutate(banddis_diff = (comparison_df - V2))
 
 comparison_df <- comparison_df |>
-    rename(ctb_val = comparison_df)
+    rename(ctb_banddis = comparison_df, frs_banddis = V2)
+
+write.xlsx(comparison_df, "data_output\\comp_bandd_frsCTB.xlsx")
 
 view(comparison_df)
 view(ctb_val)
 view(only_ct)
 view(total)
+view(ctb_total)
