@@ -1,3 +1,8 @@
+#letter numebr chaneg
+
+let_num <- data.frame(old_name = c("1", "2", "3", "4", "5", "6", "7", "8"),
+                        new_name = c("a", "b", "c", "d", "e", "f", "g", "h"))
+
 #distribution of icnome within council tax bands by region 
 
 region_dist <- function(a, b, c, d, reg) {
@@ -90,29 +95,150 @@ compreg_dist <- compreg_dist |>
 #calculate the percentage of househoulds in each council tax band by region
 compreg_dist <- compreg_dist |>
     rename(no_hh = n.x, hh_region = n.y) |>
-    mutate(frs_banddis = no_hh/hh_region)
+    mutate(frs_banddis = no_hh/hh_region) |>
+    filter(!regions %in% c("SCOT", "WAL", "NI")) |>
+    filter(!CTBAND == 10)
 
 #view(compreg_dist)
 
 ### CTB
 
+# group by region and band, tie together region and band
 ctb_regval <- ctb_val |>
     select(region, name, value) |>
     group_by(region, name) |>
     mutate(reg_band = str_c(region, name)) |>
     ungroup()
 
+#add together the households in each council tax band and each region
 ctb_regval <- ctb_regval |>
     group_by(reg_band) |>
     summarise(total = sum(value))
 
+#separate out band and region again
 ctb_regionhh <- data.frame(do.call('rbind', strsplit(as.character(ctb_regval$reg_band), "band_", fixed=TRUE)))
 ctb_regval <- cbind(ctb_regval, ctb_regionhh)
+ctb_regval <- ctb_regval |>
+    select(!reg_band)
 
+#sum up the total numbers of households in the valuation list for each region
 ctb_regtot <- ctb_regval |>
     group_by(X1) |>
     summarise(reg_total = sum(total))
 
+#remove unecessary rows
+ctb_regtot <- ctb_regtot |>
+    filter(!grepl("total", X1)) |>
+    filter (!grepl("ENG", X1))
+
+#join totals to the regional band totals 
+ctb_regdist <- left_join(ctb_regval, ctb_regtot, by = "X1")
+
+#tidy ragional ctb datat frame and calculate ct band households distributtions by region
+ctb_regdist <- ctb_regdist |>
+    na.omit() |>
+    mutate(ctb_banddis = total/reg_total) |>
+    rename(region = X1, ct_band = X2)
+
+#change the FRS 1 to 8 bands to letter
+
+compreg_dist2 <-compreg_dist
+
+compreg_dist2 <- as.character(compreg_dist2$CTBAND)
+compreg_dist2[compreg_dist2 == "1"] <- "a"
+compreg_dist2[compreg_dist2 == "2"] <- "b"
+compreg_dist2[compreg_dist2 == "3"] <- "c"
+compreg_dist2[compreg_dist2 == "4"] <- "d"
+compreg_dist2[compreg_dist2 == "5"] <- "e"
+compreg_dist2[compreg_dist2 == "6"] <- "f"
+compreg_dist2[compreg_dist2 == "7"] <- "g"
+compreg_dist2[compreg_dist2 == "8"] <- "h"
+
+#add the letter ct band column back in 
+compreg_dist3 <- cbind(compreg_dist, compreg_dist2)
+
+#tidy frs region hh dist data frame
+compreg_dist3 <- compreg_dist3 |>
+    rename(ct_band = ...7) |>
+    relocate(ct_band) 
+
+#select relevent columns
+compreg_dist3 <- compreg_dist3 |>
+    select(ct_band:frs_banddis)
+
+view(compreg_dist3)
+
+################################
+#function to compare the distribution of households in ct bands in different regions -
+# STILL WORKING ON THE WRITE TO CSV FILED PART OF THIS TO MAKE THE NAME CHANGE PASTE0
+regional_distribution <- function(b, d, f) {
+    #select region from frs
+    a <- ctb_regdist |>
+        filter(region == b)
+
+    #select the same region from ctb
+    c <- compreg_dist3 |>
+        filter(regions == d)
+    
+    #join the two dist
+
+    e <<- left_join(a, c, by = "ct_band")
+
+    e <<- e |>
+        select(region, ct_band, regions, ctb_banddis, frs_banddis) |>
+        mutate(dist_diff = ctb_banddis - frs_banddis)
+
+    write.csv(e, !! paste0("data_output\\",f , ".csv"))
+
+    return(assign(f, e, envir = parent.frame()))
+
+
+
+
+}
+
+#TRYING TO SAVE TO A CSV FILE - PASTE0 NOT WORKING 
+f <- "ahhhh"
+
+write.csv(EE_hhdist, paste0("data_output\\", f, ".csv"))
+#CALL function for each region
+regional_distribution("E", "EE", "EE_hhdist")
+regional_distribution("EM", "EM", "EM_hhdist")
+regional_distribution("L", "L", "L_hhdist")
+regional_distribution("NE", "NE", "NE_hhdist")
+regional_distribution("NW", "NW", "NW_hhdist")
+regional_distribution("SE", "SE", "SE_hhdist")
+regional_distribution("SW", "SW", "SW_hhdist")
+regional_distribution("WM", "WM", "WM_hhdist")
+regional_distribution("YH", "YH", "YH_hhdist")
+view(YH_hhdist)
+view(NE_hhdist)
+view(L_hhdist)
+view(EE_hhdist)
+view(EM_hhdist)
+
+
+
+##### checking all the data is present in each ctb and frs data frame
+checks 
+count_frs <- compreg_dist |>
+    group_by(CTBAND) |>
+    count()
+
+count_regdist <- ctb_regdist |>
+    group_by(X2) |>
+    count()
+
+
+
+write.csv(compreg_dist, "data_output\\frs_regdist.csv")
+write.csv(ctb_regdist, "data_output\\ctb_regdist.csv")
+
+view(count_regdist)
+view(count_frs)
+
+view(compreg_dist2)
+view(ctb_regdist)
 view(ctb_regtot)
 view(ctb_regionhh)
 view(ctb_regval)
