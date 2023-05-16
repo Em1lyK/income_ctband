@@ -62,6 +62,7 @@ region_dist(househol_region, househol_sw, sw, plot_sw, "SW")
 ########################################################################
 
 count_reghh <- househol_region |>
+    filter(CTBAND != 10) |>
     select(SERNUM, GVTREGN) |>
     group_by(GVTREGN)|>
     count()
@@ -85,6 +86,7 @@ count_reghh <- count_reghh |>
 
 #group the df by council tax band and region 
 compreg_dist <- househol_region |>
+
     group_by(CTBAND, GVTREGN) |>
     count()
 
@@ -137,8 +139,8 @@ ctb_regdist <- left_join(ctb_regval, ctb_regtot, by = "X1")
 #tidy ragional ctb datat frame and calculate ct band households distributtions by region
 ctb_regdist <- ctb_regdist |>
     na.omit() |>
-    mutate(ctb_banddis = total/reg_total) |>
-    rename(region = X1, ct_band = X2)
+    mutate(ctb_banddis = total/reg_total*100) |>
+    rename(region = X1, ct_band = X2) 
 
 #change the FRS 1 to 8 bands to letter
 
@@ -164,14 +166,15 @@ compreg_dist3 <- compreg_dist3 |>
 
 #select relevent columns
 compreg_dist3 <- compreg_dist3 |>
-    select(ct_band:frs_banddis)
+    select(ct_band:frs_banddis)|>
+    mutate(frs_banddis = frs_banddis*100)
 
 view(compreg_dist3)
 
 ################################
 #function to compare the distribution of households in ct bands in different regions -
 # STILL WORKING ON THE WRITE TO CSV FILED PART OF THIS TO MAKE THE NAME CHANGE PASTE0
-regional_distribution <- function(b, d, f) {
+regional_distribution <- function(b, d, g, f) {
     #select region from frs
     a <- ctb_regdist |>
         filter(region == b)
@@ -188,36 +191,54 @@ regional_distribution <- function(b, d, f) {
         select(region, ct_band, regions, ctb_banddis, frs_banddis) |>
         mutate(dist_diff = ctb_banddis - frs_banddis)
 
-    write.csv(e, !! paste0("data_output\\",f , ".csv"))
+    #write.csv(e, paste0("data_output\\",f , ".csv"))
+
+    #write.csv(e, "data_output\\EE_hhdist.csv")
+    write.csv(e, paste0(g))
 
     return(assign(f, e, envir = parent.frame()))
 
-
-
-
 }
+ 
 
-#TRYING TO SAVE TO A CSV FILE - PASTE0 NOT WORKING 
-f <- "ahhhh"
-
-write.csv(EE_hhdist, paste0("data_output\\", f, ".csv"))
 #CALL function for each region
-regional_distribution("E", "EE", "EE_hhdist")
-regional_distribution("EM", "EM", "EM_hhdist")
-regional_distribution("L", "L", "L_hhdist")
-regional_distribution("NE", "NE", "NE_hhdist")
-regional_distribution("NW", "NW", "NW_hhdist")
-regional_distribution("SE", "SE", "SE_hhdist")
-regional_distribution("SW", "SW", "SW_hhdist")
-regional_distribution("WM", "WM", "WM_hhdist")
-regional_distribution("YH", "YH", "YH_hhdist")
+regional_distribution("E", "EE", "data_output\\EE_hhdist.csv", "EE_hhdist")
+regional_distribution("EM", "EM", "data_output\\EM_hhdist.csv", "EM_hhdist")
+regional_distribution("L", "L", "data_output\\L_hhdist.csv", "L_hhdist")
+regional_distribution("NE", "NE", "data_output\\NE_hhdist.csv", "NE_hhdist")
+regional_distribution("NW", "NW", "data_output\\NW_dist.csv", "NW_hhdist" )
+regional_distribution("SE", "SE", "data_output\\SE_hhdist.csv", "SE_hhdist")
+regional_distribution("SW", "SW", "data_output\\SW_hhdist.csv", "SW_hhdist")
+regional_distribution("WM", "WM", "data_output\\WM_hhdist.csv", "WM_hhdist")
+regional_distribution("YH", "YH", "data_output\\YH_hhdist.csv", "YH_hhdist")
 view(YH_hhdist)
 view(NE_hhdist)
 view(L_hhdist)
 view(EE_hhdist)
 view(EM_hhdist)
+view(SW_hhdist)
+view(WM_hhdist)
+view(NW_hhdist)
 
+#collate all the regional hh dist comparisions
+region_hhdist <- rbind(EE_hhdist, EM_hhdist, L_hhdist, NE_hhdist, NW_hhdist, SE_hhdist, SW_hhdist, WM_hhdist, YH_hhdist)
 
+#arrage with the largest dist differences between the frs and ctb at the top
+region_hhdist <- region_hhdist |>
+    arrange(desc(abs(dist_diff)))
+
+view(region_hhdist)
+
+#write regional dist comparisions to output folder
+write.csv(region_hhdist, "data_output\\region_hhdist.csv")
+
+#write the summary of the sample size for each region to the output file
+count_reghh <- count_reghh |>
+    rename(no_hh = n)
+
+write.csv(count_reghh, "data_output\\frs_reghh.csv")
+
+view(count_reghh)
 
 ##### checking all the data is present in each ctb and frs data frame
 checks 
