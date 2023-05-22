@@ -10,7 +10,6 @@ library(tidyverse)
 library(xlsx)
 library(readODS)
 library(janitor)
-library(wesanderson)
 
 #define variables to map onto encoded data
 income_levels <- c("Less 200", "200 to 400", "400 to 600", "600 to 800", "800 to 1000", "1000 to 1200", "1200 to 1400", "1400 to 1600", "1600 to 1800", "1800 to 2000", "Above 2000")
@@ -67,46 +66,26 @@ t <- incband_hh %>%
 group_by(CTBAND,HHINCBND) %>%
 count() 
 
-#calculate the percentage of households in each income range by ct band, removing NAs 
+#calculate the percentage of households in each income range by ct band
 t <- t |>
-filter(CTBAND != -1, CTBAND != 10) |>
 group_by(CTBAND) |>
 mutate(total = sum(n)) |>
 mutate(percent = n/total)
 
-view(t)
-
-#change income band to factor type 
-t$HHINCBND <- as.factor(t$HHINCBND)
-
-#add the corresponding income bands in exchange for the numbers  
-levels(t$HHINCBND) <- list( "Less 200" = 1, 
-                            "200 to 400" = 2, 
-                            "400 to 600" = 3, 
-                            "600 to 800" = 4, 
-                            "800 to 1000" = 5, 
-                            "1000 to 1200" = 6, 
-                            "1200 to 1400" = 7, 
-                            "1400 to 1600" = 8, 
-                            "1600 to 1800" = 9, 
-                            "1800 to 2000" = 10, 
-                            "Above 2000" = 11)
 
 #plot graphs of the distribution of household income within council tax bands
 p <- t %>% 
-ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +              #input data fro hh percentage and income band
-geom_bar(stat = "identity") +                                        #specify a bar chart
-ggplot2::scale_fill_brewer(palette="Spectral") +                     #add thecolour palette
-theme(axis.text.x=element_blank(),                                   #remove x axis labels
-        axis.ticks.x=element_blank())+                               #remove x axis ticks
- ylab("Percentage of households by council tax band and income band at England level") + 
- xlab("Income bands") +                                              #add axis lables
- ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
-facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))     #make multiple graphs by CT band
-p
+filter(CTBAND != -1) %>%
+#filter(CTBAND == 5) %>%
+ggplot(aes(x = HHINCBND, y = percent)) +
+geom_bar(stat = "identity") +
+scale_x_discrete(limit = income_levels) +
+theme(axis.text.x = element_text(angle = 90), 
+axis.ticks = element_blank())+
+facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))
 
 #save plot
-ggsave("hhdist_plots\\eng.png", p)
+#ggsave("hhdist_plots\\eng.png", p)
 #save plot input data
 #t_ungroup <- ungroup(t)
 #write.xlsx(t_ungroup, "D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2\\incomedis_ctband_input.xlsx")

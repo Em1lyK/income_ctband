@@ -3,8 +3,7 @@
 let_num <- data.frame(old_name = c("1", "2", "3", "4", "5", "6", "7", "8"),
                         new_name = c("a", "b", "c", "d", "e", "f", "g", "h"))
 
-#distribution of icnome within council tax bands by region eng
-
+#distribution of icnome within council tax bands by region 
 
 region_dist <- function(a, b, c, d, reg) {
     b <- a |>
@@ -15,66 +14,22 @@ region_dist <- function(a, b, c, d, reg) {
     count() 
 
     b <- b |>
-    # filter(CTBAND != -1, CTBAND != 10) |>
     group_by(CTBAND) |>
     mutate(total = sum(n)) |>
     mutate(percent = n/total)
 
-    # #change income band to factor type 
-    # b$HHINCBND <- as.factor(b$HHINCBND)
-
-    # #add the corresponding income bands in exchange for the numbers  
-    # levels(b$HHINCBND) <- list( "Less than 200" = 1, 
-    #                             "200 and less than  400" = 2, 
-    #                             "400 and less than 600" = 3, 
-    #                             "600 and less than 800" = 4, 
-    #                             "800 and less than 1000" = 5, 
-    #                             "1000 and less than 1200" = 6, 
-    #                             "1200 and less than 1400" = 7, 
-    #                             "1400 and less than 1600" = 8, 
-    #                             "1600 and less than 1800" = 9, 
-    #                             "1800 and less than 2000" = 10, 
-    #                             "Above 2000" = 11)
-
     d <- b %>% 
-    ggplot(aes(x = HHINCBND, y = percent)) +              #input data fro hh percentage and income band
-    geom_bar(stat = "identity")
-
-    ggsave(paste0("hhdist_plots\\", reg,"_hhdist.png"), d)
-   
-
-}
-
-    d <- b %>% 
-    ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +             #input data fro hh percentage and income band
-    geom_bar(stat = "identity") +                                       #specify a bar chart
-    # ggplot2::scale_fill_brewer(palette="Spectral") +                    #add thecolour palette
-    theme(axis.text.x=element_blank(),                                  #remove x axis labels
-        axis.ticks.x=element_blank())+                                  #remove x axis ticks
-    ylab("Percentage of households by council tax band and income band at England level") + 
-    xlab("Income bands") +                                              #add axis lables
-    # ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
-    facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))
-
-p <- t %>% 
-ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +              #input data fro hh percentage and income band
-geom_bar(stat = "identity") 
-p
-+                                        #specify a bar chart
-ggplot2::scale_fill_brewer(palette="Spectral") +                     #add thecolour palette
-theme(axis.text.x=element_blank(),                                   #remove x axis labels
-        axis.ticks.x=element_blank())+                               #remove x axis ticks
- ylab("Percentage of households by council tax band and income band at England level") + 
- xlab("Income bands") +                                              #add axis lables
- ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
-facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))     #make multiple graphs by CT band
-
-   filter(CTBAND != -1) %>%
+    filter(CTBAND != -1) %>%
     ggplot(aes(x = HHINCBND, y = percent)) +
     geom_bar(stat = "identity") +
     scale_x_discrete(limit = income_levels) +
     theme(axis.text.x = element_text(angle = 90), 
     axis.ticks = element_blank())+
+    facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))
+    ggsave(paste0("hhdist_plots\\", reg,"_hhdist.png"), d)
+   
+
+}
 
 ne <- 112000001.0
 nw <- 112000002.0
