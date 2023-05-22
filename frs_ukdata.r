@@ -103,7 +103,7 @@ theme(axis.text.x=element_blank(),                                   #remove x a
  xlab("Income bands") +                                              #add axis lables
  ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
 facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))     #make multiple graphs by CT band
-p
+
 
 #save plot
 ggsave("hhdist_plots\\eng.png", p)
