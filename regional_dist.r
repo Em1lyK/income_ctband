@@ -1,25 +1,39 @@
-#letter numebr chaneg
+#letter numebr change
 
 let_num <- data.frame(old_name = c("1", "2", "3", "4", "5", "6", "7", "8"),
                         new_name = c("a", "b", "c", "d", "e", "f", "g", "h"))
 
+
+
+#define yusuf's beautiful colour scheme 
+yusuf_pal_full <- c("#012169", "#3e2272", "#632076","#851d76", "#a41b72", "#bf1f6b", "#d62d60", "#e94154", "#f65846", "#ff7135", "#ff8b21", "#ffa600")
+
+
 #distribution of icnome within council tax bands by region eng
 
 
-region_dist <- function(a, b, c, reg) {
+
+region_dist <- function(a, b, c, reg, yaxis) {
+    
+    #define vectors of regions that should keep band H and regions that should lose band H - probably need a more analytical method to decided when we keep of lose band H
+    keep_h <- c("North West", "East England", "West Midlands", "London", "East Midlands")                 
+    remove_h <- c("South East", "North East", "South West", "Yorkshire and Humber")                       
+
+    #selecte the region
     b <- a |>
     filter(GVTREGN == c)
 
-
+    #count the number of houses in each council tax band and income band
     b <- b %>% 
     group_by(CTBAND,HHINCBND) %>%
     count() 
 
+    #calculate the percentage of houses in the region selected in each income band within each council tax band
     b <- b |>
     filter(CTBAND != -1, CTBAND != 10) |>
     group_by(CTBAND) |>
     mutate(total = sum(n)) |>
-    mutate(percent = n/total)
+    mutate(percent = n/total*100)
 
 
     # #change income band to factor type 
@@ -38,22 +52,46 @@ region_dist <- function(a, b, c, reg) {
                                 "1800 and less than 2000" = 10, 
                                 "Above 2000" = 11)
 
+    #if statment to draw differenct graphs depnding on if the region should keep band H in or not
+    if (paste0(yaxis) %in% keep_h ) {
     d <<- b %>% 
     ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +              #input data fro hh percentage and income band
     geom_bar(stat = "identity") +                                        #specify a bar chart
-    ggplot2::scale_fill_brewer(palette="Spectral") +                     #add thecolour palette
+   scale_fill_manual(values=yusuf_pal_full)+                             #add thecolour palette
+   scale_y_continuous(limits = c(0,50))+
     theme(axis.text.x=element_blank(),                                   #remove x axis labels
-            axis.ticks.x=element_blank())+                               #remove x axis ticks
-    ylab("Percentage of households by council tax band and income band") + 
+            axis.ticks.x=element_blank(),
+            text = element_text(size = 18))+                               #remove x axis ticks
+    ylab(paste0("Percentage of households by council tax band and income band in the ", yaxis, " (%)")) + 
     xlab("Income bands") +                                              #add axis lables
     ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
     facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))     #make multiple graphs by CT band
-    
-    ggplot2::ggsave(file=base::paste0( reg,"_hhdist.png"), d)
-   
+
+    ggplot2::ggsave(paste0( reg,"_hhdist.png"), d)
+
+    } else {
+    d <<- b %>% 
+    filter(CTBAND != 8)|>
+    ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +              #input data fro hh percentage and income band
+    geom_bar(stat = "identity") +                                        #specify a bar chart
+   scale_fill_manual(values=yusuf_pal_full)+                             #add thecolour palette
+   scale_y_continuous(limits = c(0,50))+
+    theme(axis.text.x=element_blank(),                                   #remove x axis labels
+            axis.ticks.x=element_blank(),
+            text = element_text(size = 18))+                               #remove x axis ticks
+    ylab(paste0("Percentage of households by council tax band and income band in the ", yaxis, " (%)")) + 
+    xlab("Income bands") +                                              #add axis lables
+    ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
+    facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))     #make multiple graphs by CT band
+
+    ggplot2::ggsave(paste0( reg,"_hhdist.png"), d)
+    }
+
+    #b <<- b
 
 }
 
+#code fre uses for each region
 ne <- 112000001.0
 nw <- 112000002.0
 yh <- 112000003.0
@@ -69,16 +107,30 @@ sw <- 112000009.0
 househol_region <- househol_raw |>
     select(SERNUM, CTBAND, HHINCBND, GVTREGN)
 
-region_dist(househol_region, househol_ne, ne, "NE")
-region_dist(househol_region, househol_nw, nw, plot_nw, "NW")
-region_dist(househol_region, househol_yh, yh, plot_yh, "YH")
-region_dist(househol_region, househol_em, em, plot_em, "EM")
-region_dist(househol_region, househol_wm, wm, plot_wm, "WM")
-region_dist(househol_region, househol_ee, ee, plot_ee, "EE")
-region_dist(househol_region, househol_l, l, plot_l, "L")
-region_dist(househol_region, househol_se, se, plot_se, "SE")
-region_dist(househol_region, househol_sw, sw, plot_sw, "SW")
+region_dist(househol_region, househol_ne, ne, "hhdist_plots\\NE", "North East")
+region_dist(househol_region, househol_nw, nw, "hhdist_plots\\NW", "North West")
+region_dist(househol_region, househol_yh, yh, "hhdist_plots\\YH", "Yorkshire and Humber ")
+region_dist(househol_region, househol_em, em, "hhdist_plots\\EM", "East Midlands")
+region_dist(househol_region, househol_wm, wm, "hhdist_plots\\WM", "West Midlands")
+region_dist(househol_region, househol_ee, ee, "hhdist_plots\\EE", "East Engalnd")
+region_dist(househol_region, househol_l, l, "hhdist_plots\\L", "London")
+region_dist(househol_region, househol_se, se, "hhdist_plots\\SE", "South East")
+region_dist(househol_region, househol_sw, sw, "hhdist_plots\\SW", "South West")
 
+
+#pull out input data
+nw_plot_input <- b |>
+ungroup() |>
+remove_labels() 
+write.xlsx(nw_plot_input, "data_output\\nw_plot_input.xlsx")
+str(eng_plot_input)
+
+
+wm_plot_input <- b |>
+ungroup() |>
+remove_labels() 
+write.xlsx(nw_plot_input, "data_output\\wm_plot_input.xlsx")
+str(eng_plot_input)
 
 #########################################################################
 ##### check the number of hosueholds in each region #####################
