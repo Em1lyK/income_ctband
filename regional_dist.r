@@ -316,7 +316,7 @@ write.csv(count_reghh, "data_output\\frs_reghh.csv")
 view(count_reghh)
 
 ##### checking all the data is present in each ctb and frs data frame
-checks 
+##checks 
 count_frs <- compreg_dist |>
     group_by(CTBAND) |>
     count()
