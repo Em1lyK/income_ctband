@@ -1,8 +1,9 @@
 #05/06/2023
-#read in the family resources survey and 
+#read in the family resources survey and plot the income distribution in each council tax band at eng level
+#check the distribution of households across conucil  tax bands in the family resources survey is similar enough to the distribution of households in the ctb to carry out this analysis 
 
 #import packages
-library(haven)      
+library(haven)                                  #for function to read in dta file
 library(tidyverse)                              #includes usual functions for analysis 
 library(xlsx)                                   #read in and output excel sheets 
 library(readODS)                                #read ods files 
@@ -21,8 +22,8 @@ frs_househol <- paste0("inputs\\2122_househol.dta")
 ctb_input <- "Q:\\ADD Directorate\\Local Policy Analysis\\LGF\\Council Tax\\Households Income Analysis\\Council_Taxbase_local_authority_level_data_2022 (4).ods"
 
 #read in frs data househol file and ctb dewellings on the valuation list 
-househol_raw <- read_dta(frs_househol)
-ctb_raw <- read_ods(ctb_input, sheet = "Council_Taxbase_Data", range = "A6:N316")
+househol_raw <- haven::read_dta(frs_househol)
+ctb_raw <- readODS::read_ods(ctb_input, sheet = "Council_Taxbase_Data", range = "A6:N316")
 
 #clean ctb
 ctb_val <- ctb_raw %>%
@@ -81,7 +82,7 @@ ggsave("hhdist_plots\\eng.png", p)                                  #save plot
 #save plot input data
 eng_plot_input <- t |>
 ungroup() |>
-remove_labels() 
+labelled::remove_labels() 
 write.xlsx(eng_plot_input, "data_output\\eng_plot_input.xlsx")
 
 ###########################################################
