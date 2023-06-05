@@ -1,8 +1,5 @@
-#24/05/2023
-#investigating the family resources survey
-#update to 2021-22 frs survey
-
-
+#05/06/2023
+#read in the family resources 
 
 #import packages
 library(haven)
@@ -11,7 +8,6 @@ library(xlsx)
 library(readODS)
 library(janitor)
 library(labelled)
-#library(wesanderson)
 
 #define variables to map onto encoded data
 income_levels <- c("Less 200", "200 to 400", "400 to 600", "600 to 800", "800 to 1000", "1000 to 1200", "1200 to 1400", "1400 to 1600", "1600 to 1800", "1800 to 2000", "Above 2000")
@@ -51,19 +47,6 @@ househol <- househol_raw |>
 incband_hh <- househol |>
     select(SERNUM, CTBAND, HHINCBND, GVTREGN) |>
     filter(!GVTREGN %in% as.numeric(not_eng))
-
-###################################
-#### messy stuff I tried #####
-##################################
-#incband_a <- incband_hh |>
-#    filter(CTBAND == 1)
-#a_row <- table(incband_a$HHINCBND)
-#a_row <- as.data.frame(table(incband_a$HHINCBND))
-#a_row <- pivot_wider(a_row, name = 'Var1')
-#incband_a <- incband_a |>
-#    group_by(HHINCBND)
-#pivotwider <- incband_hh |>
-#    pivot_wider(names_from = CTBAND, values_from = HHINCBND)
 
 
 #condense the data to the number of household in each income range by ct band 
