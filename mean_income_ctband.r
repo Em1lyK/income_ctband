@@ -122,6 +122,11 @@ plot_region_aveinc <- ggplot(aveinc_region, aes(GVTREGN, mean, group = as.factor
  ggplot2::ggsave('D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\all_ave_inc.png', plot_region_aveinc)
 plot_region_aveinc 
 
+
+#MAKE THE GRAPH BETTER 
+#START BY CHANGING HTE COLOURS
+#LINES ????
+
   banda_mean_inc <- banda_mean_inc + scale_y_continuous(labels = c(1 = "Less than 200", 
                                                                     2 = "200 and less than  400", 
                                                                     3 =  "400 and less than 600", 
