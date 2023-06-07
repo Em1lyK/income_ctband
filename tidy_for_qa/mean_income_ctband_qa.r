@@ -136,3 +136,5 @@ plot_region_aveinc
 print(banda_mean_inc)
 
 view(househol_banda)
+
+view(b_d_400_600)

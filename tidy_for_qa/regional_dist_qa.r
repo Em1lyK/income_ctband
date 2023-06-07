@@ -36,17 +36,17 @@ region_dist <- function(a, b, c, reg, yaxis) {
 
     b$HHINCBND <- as.factor(b$HHINCBND)     #change income band to factor type so it can be re-lablelled on the graphs
 
-    levels(b$HHINCBND) <- list( "Less than 200" = 1,        #add the corresponding income bands in exchange for the numbers  
-                                "200 and less than  400" = 2, 
-                                "400 and less than 600" = 3, 
-                                "600 and less than 800" = 4, 
-                                "800 and less than 1000" = 5, 
-                                "1000 and less than 1200" = 6, 
-                                "1200 and less than 1400" = 7, 
-                                "1400 and less than 1600" = 8, 
-                                "1600 and less than 1800" = 9, 
-                                "1800 and less than 2000" = 10, 
-                                "Above 2000" = 11)
+    levels(b$HHINCBND) <- list(  "Less than 10,400" = 1,        #add the corresponding income bands in exchange for the numbers  
+                                "10,400 and less than  20,700" = 2, 
+                                "20,700 and less than 31,300" = 3, 
+                                "31,300 and less than 41,700" = 4, 
+                                "41,700 and less than 52,200" = 5, 
+                                "52,200 and less than 62,200" = 6, 
+                                "62,200 and less than 73,000" = 7, 
+                                "73,000 and less than 83,500" = 8, 
+                                "83,500 and less than 93,900" = 9, 
+                                "93,900 and less than 104,000" = 10, 
+                                "Above 104,000" = 11)
 
     #if statment to draw differenct graphs depnding on if the region should keep band H in or not
     if (paste0(yaxis) %in% keep_h ) {
@@ -58,13 +58,12 @@ region_dist <- function(a, b, c, reg, yaxis) {
     theme(axis.text.x=element_blank(),                                   #remove x axis labels
             axis.ticks.x=element_blank(),
             text = element_text(size = 18))+                             #remove x axis ticks
-            theme_minimal()+
     ylab(paste0("Percentage of households by council tax band and income band in the ", yaxis, " (%)")) + 
     xlab("Income bands") +                                               #add axis lables
     ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title
     facet_wrap(~CTBAND, labeller = labeller(CTBAND = ctband_levels))     #make multiple graphs by CT band
 
-    ggplot2::ggsave(paste0( reg,"_hhdist.png"), d)                      #save  plot                 
+    ggplot2::ggsave(paste0( reg,"_hhdist.png"), d)                      #save  plot                   
 
     } else {
     d <<- b %>% 

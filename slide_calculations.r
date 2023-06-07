@@ -78,3 +78,7 @@ view(ctb_engval)
    
     ggplot2::ggsave(paste0("hhdist_plots\\hh_ctband.png"), a)
     ggplot2::ggsave(paste0("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\hh_ctband.png"), a)
+inc <- c(200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000)
+yr <- (365.2/7)*inc
+view(yr)
+write_csv(as.data.frame(yr), 'data_output\\per_year.csv' )
