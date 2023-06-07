@@ -1,4 +1,4 @@
-#letter numebr change
+letter numebr change
 
 let_num <- data.frame(old_name = c("1", "2", "3", "4", "5", "6", "7", "8"),
                         new_name = c("a", "b", "c", "d", "e", "f", "g", "h"))
@@ -13,7 +13,7 @@ yusuf_pal_full <- c("#012169", "#3e2272", "#632076","#851d76", "#a41b72", "#bf1f
 
 
 
-region_dist <- function(a, b, c, reg, yaxis) {
+region_dist <- function(a, plot_data, c, reg, yaxis) {
     
     #define vectors of regions that should keep band H and regions that should lose band H - probably need a more analytical method to decided when we keep of lose band H
     keep_h <- c("North West", "East England", "West Midlands", "London", "East Midlands")                 
@@ -54,7 +54,7 @@ region_dist <- function(a, b, c, reg, yaxis) {
 
     #if statment to draw differenct graphs depnding on if the region should keep band H in or not
     if (paste0(yaxis) %in% keep_h ) {
-    d <<- b %>% 
+    d <- b %>% 
     ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +              #input data fro hh percentage and income band
     geom_bar(stat = "identity") +                                        #specify a bar chart
    scale_fill_manual(values=yusuf_pal_full)+                             #add thecolour palette
@@ -70,7 +70,7 @@ region_dist <- function(a, b, c, reg, yaxis) {
     ggplot2::ggsave(paste0( reg,"_hhdist.png"), d)
 
     } else {
-    d <<- b %>% 
+    d <- b %>% 
     filter(CTBAND != 8)|>
     ggplot(aes(x = HHINCBND, y = percent, fill=HHINCBND)) +              #input data fro hh percentage and income band
     geom_bar(stat = "identity") +                                        #specify a bar chart
@@ -87,7 +87,7 @@ region_dist <- function(a, b, c, reg, yaxis) {
     ggplot2::ggsave(paste0( reg,"_hhdist.png"), d)
     }
 
-    #b <<- b
+    return(assign(paste0(plot_data), b, envir = parent.frame()))
 
 }
 
@@ -107,15 +107,15 @@ sw <- 112000009.0
 househol_region <- househol_raw |>
     select(SERNUM, CTBAND, HHINCBND, GVTREGN)
 
-region_dist(househol_region, househol_ne, ne, "hhdist_plots\\NE", "North East")
-region_dist(househol_region, househol_nw, nw, "hhdist_plots\\NW", "North West")
-region_dist(househol_region, househol_yh, yh, "hhdist_plots\\YH", "Yorkshire and Humber ")
-region_dist(househol_region, househol_em, em, "hhdist_plots\\EM", "East Midlands")
-region_dist(househol_region, househol_wm, wm, "hhdist_plots\\WM", "West Midlands")
-region_dist(househol_region, househol_ee, ee, "hhdist_plots\\EE", "East Engalnd")
-region_dist(househol_region, househol_l, l, "hhdist_plots\\L", "London")
-region_dist(househol_region, househol_se, se, "hhdist_plots\\SE", "South East")
-region_dist(househol_region, househol_sw, sw, "hhdist_plots\\SW", "South West")
+region_dist(househol_region, 'househol_ne', ne, "hhdist_plots\\NE", "North East")
+region_dist(househol_region, 'househol_nw', nw, "hhdist_plots\\NW", "North West")
+region_dist(househol_region, 'househol_yh', yh, "hhdist_plots\\YH", "Yorkshire and Humber ")
+region_dist(househol_region, 'househol_em', em, "hhdist_plots\\EM", "East Midlands")
+region_dist(househol_region, 'househol_wm', wm, "hhdist_plots\\WM", "West Midlands")
+region_dist(househol_region, 'househol_ee', ee, "hhdist_plots\\EE", "East Engalnd")
+region_dist(househol_region, 'househol_l', l, "hhdist_plots\\L", "London")
+region_dist(househol_region, 'househol_se', se, "hhdist_plots\\SE", "South East")
+region_dist(househol_region, 'househol_sw', sw, "hhdist_plots\\SW", "South West")
 
 
 #pull out input data

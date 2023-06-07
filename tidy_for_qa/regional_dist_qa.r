@@ -58,6 +58,7 @@ region_dist <- function(a, b, c, reg, yaxis) {
     theme(axis.text.x=element_blank(),                                   #remove x axis labels
             axis.ticks.x=element_blank(),
             text = element_text(size = 18))+                             #remove x axis ticks
+            theme_minimal()+
     ylab(paste0("Percentage of households by council tax band and income band in the ", yaxis, " (%)")) + 
     xlab("Income bands") +                                               #add axis lables
     ggplot2::guides(fill=guide_legend(title="Income bands \n per week")) +          #add lgend title

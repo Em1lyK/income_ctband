@@ -113,11 +113,50 @@ ave_inc(7, 'g_aveinc')
 ave_inc(8, 'h_aveinc')
  
 aveinc_region <- rbind(a_aveinc, b_aveinc, c_aveinc, d_aveinc, e_aveinc, f_aveinc, g_aveinc, h_aveinc)
-aveinc_region <- as.(aveinc_region$the_band)
+
+
+aveinc_region$the_band <- as.factor(aveinc_region$the_band)                     #change ctband to factor type so it can be lablled on the graph
+levels(aveinc_region$the_band) <- list( "A" = 1,        #add the corresponding income bands in exchange for the numbers  
+                                "B" = 2, 
+                                "C" = 3, 
+                                "D" = 4, 
+                                "E" = 5, 
+                                "F" = 6, 
+                                "G" = 7, 
+                                "H" = 8)
+
 plot_region_aveinc <- ggplot(aveinc_region, aes(GVTREGN, mean, group = as.factor(the_band), color = as.factor(the_band))) + 
                         geom_point(size=5, shape=16) +
-                        scale_colour_manual(values = yusuf_pal_full)
+                        theme(text = element_text(size = 20)) +
+                        scale_color_brewer(palette = "Paired")
+                        #+
+                        #scale_colour_manual(palette = paired)
                         #scale_colour_discrete(name = "CT Band", breaks = seq(1, 8, by = 1))
+plot_region_aveinc
+
+
+plot_region_aveinc_line <- ggplot(aveinc_region, aes(x = as.character(GVTREGN),y = mean, group = as.factor(the_band), color = as.factor(the_band))) + 
+                        geom_line(size = 1.2) +
+                           scale_x_discrete(labels = c('112000008' = 'SE', '112000005' = 'WM', '112000007' = 'L', 
+                                                    '112000002' = 'NW', '112000006' = 'EE', '112000009' = 'SW', 
+                                                     '112000001' = 'NE', '112000003' = 'YH','112000004' = 'EM')) +
+                        xlab('Region') +
+                        ylab('Income bracket') +
+                        theme(text = element_text(size = 20)) +
+                        scale_color_brewer(palette = "Paired") +
+                        labs(fill = 'CT Band')
+
+
+
+                        labs(fill='NEW LEGEND TITLE') 
+                        scale_fill_discrete(name = "Council Tax Bands")
+                        ggplot2::guides(fill=guide_legend(title="Council Tax Bands"))
+                              scale_fill_discrete(name = "Council Tax Bands")
+                        #+
+                        #scale_colour_manual(palette = paired)
+                        #scale_colour_discrete(name = "CT Band", breaks = seq(1, 8, by = 1))
+plot_region_aveinc_line
+
 
  ggplot2::ggsave('D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\all_ave_inc.png', plot_region_aveinc)
 plot_region_aveinc 
