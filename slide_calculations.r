@@ -6,7 +6,8 @@ setwd("D:\\Users\\emily.keenan\\Documents\\GitHub\\income_ctband2")         #def
 
 source('frs_ukdata.r', chdir = TRUE)                                        #source file that reads in frs and calculated England distribution
 source('regional_dist.r')                                                   #source files that calculates regional distribution
- source('househol_composition.r')                                            #source file that plots graphs of household composition
+source('househol_composition.r')                                            #source file that plots graphs of household composition
+
 
 
 ###################################################################################################
@@ -82,3 +83,7 @@ inc <- c(200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000)
 yr <- (365.2/7)*inc
 view(yr)
 write_csv(as.data.frame(yr), 'data_output\\per_year.csv' )
+nrow(hosuehol_raw |>
++ filter(!CTBAND %in% c(-1, 10))
++ )
+nrow(str(househol_raw$CTBAND))

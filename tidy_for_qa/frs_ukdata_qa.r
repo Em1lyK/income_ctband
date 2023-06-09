@@ -49,17 +49,17 @@ mutate(total = sum(n)) |>                               #counc the number of hos
 mutate(percent = n/total*100)                           #number of housholds in each ct bands and income band /total number of households in corresponding ct band
 
 t$HHINCBND <- as.factor(t$HHINCBND)                     #change income band to factor type so it can be lablled on the graph
-levels(t$HHINCBND) <- list( "Less than 10,400" = 1,        #add the corresponding income bands in exchange for the numbers  
-                                "10,400 and less than  20,700" = 2, 
-                                "20,700 and less than 31,300" = 3, 
-                                "31,300 and less than 41,700" = 4, 
-                                "41,700 and less than 52,200" = 5, 
-                                "52,200 and less than 62,200" = 6, 
-                                "62,200 and less than 73,000" = 7, 
-                                "73,000 and less than 83,500" = 8, 
-                                "83,500 and less than 93,900" = 9, 
-                                "93,900 and less than 104,000" = 10, 
-                                "Above 104,000" = 11)
+levels(t$HHINCBND) <- list( "Less than 10K" = 1,        #add the corresponding income bands in exchange for the numbers  
+                                "10K and less than  21K" = 2, 
+                                "20K and less than 31K" = 3, 
+                                "31K and less than 42K" = 4, 
+                                "42K and less than 52K" = 5, 
+                                "52K and less than 62K" = 6, 
+                                "62K and less than 73K" = 7, 
+                                "73K and less than 84K" = 8, 
+                                "84K and less than 94K" = 9, 
+                                "94K and less than 100K" = 10, 
+                                "Above 100K" = 11)
 
 ###################################################################################################
 ###########plot graphs of the distribution of household income within council tax bands############

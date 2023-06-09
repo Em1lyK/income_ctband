@@ -60,7 +60,7 @@ house_total <- house_compo |>
 ####### distribution of single person hh across council tax bands #############
 ###############################################################################
 hh_plots(single_person, 'percent_one', 'input_one')                                                             #call function to generate data for the graphs: single adult households 
-plot_hh_types(input_one, input_one$percent_one,"#012169", 50, "Percentage of single adult households (%)",     #call function to plot percentage of hh in each council tax band that are made up by single person hh
+plot_hh_types(input_one, input_one$percent_one,"#012169", 50, "Percentage of households in each band occupied by single adults (%)",     #call function to plot percentage of hh in each council tax band that are made up by single person hh
                 "hhdist_plots\\single_adult_hh.png", 
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\single_adult_hh.png")
 
@@ -68,7 +68,7 @@ plot_hh_types(input_one, input_one$percent_one,"#012169", 50, "Percentage of sin
 ####### distribution of pensioner across council tax bands ###################
 ###############################################################################
 hh_plots(over_pension, 'percent_pen', 'pen_input')                                                              #call function to generate data for the graphs: over pension age households (at least one adult) 
-plot_hh_types(pen_input, pen_input$percent_pen,"#3e2272", 50, "Percentage of pensioner households (%)",         #plot the data: over pension age households (at least one adult) 
+plot_hh_types(pen_input, pen_input$percent_pen,"#3e2272", 50, "Percentage of households in each band occupied by pensioners (%)",         #plot the data: over pension age households (at least one adult) 
                 "hhdist_plots\\pension_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\pension_hh.png")
 
@@ -76,7 +76,7 @@ plot_hh_types(pen_input, pen_input$percent_pen,"#3e2272", 50, "Percentage of pen
 ################## distribution of 3 or more children hh #####################
 ###############################################################################
 hh_plots(three_more, 'percent_three', 'three_input')                                                                                    #call function to generate data for the graphs: three children or more
-plot_hh_types(three_input, three_input$percent_three,"#632076", 50, "Percentage of households with three or more children (%)",         #plot the data: three children or more
+plot_hh_types(three_input, three_input$percent_three,"#632076", 50, "Percentage of households in each band with three or more children (%)",         #plot the data: three children or more
                 "hhdist_plots\\three_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\three_hh.png")
 
@@ -84,7 +84,7 @@ plot_hh_types(three_input, three_input$percent_three,"#632076", 50, "Percentage 
 ################# distribution of two children hh #############################
 ###############################################################################
 hh_plots(two_kids, 'percent_two', 'two_input')                                                                                          #call function to generate data for the graphs: two children
-plot_hh_types(two_input, two_input$percent_two,"#851d76", 15, "Percentage of households with two children (%)",                         #plot data: two children
+plot_hh_types(two_input, two_input$percent_two,"#851d76", 15, "Percentage of households in each band with two children (%)",                         #plot data: two children
                 "hhdist_plots\\two_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\two_hh.png")
 
@@ -92,7 +92,7 @@ plot_hh_types(two_input, two_input$percent_two,"#851d76", 15, "Percentage of hou
 ################ distribution of sinlge parents #############################
 ###############################################################################
 hh_plots(single_parents, 'per_sing_par', 'sing_par_input')                                                                              #call function to generate data for the graphs: sinlge parent houesholds
-plot_hh_types(sing_par_input, sing_par_input$per_sing_par,"#a41b72", 15, "Percentage of sinlge parent households (%)",                  #plot data: sinlge parent houesholds
+plot_hh_types(sing_par_input, sing_par_input$per_sing_par,"#a41b72", 15, "Percentage of households in each band occupied by a sinlge parent (%)",                  #plot data: sinlge parent houesholds
                 "hhdist_plots\\sing_par_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\sing_par_hh.png")
 
@@ -112,7 +112,7 @@ hh_fifty <- left_join(hh_fifty, house_total, by = 'CTBAND')                     
 hh_fifty <- hh_fifty |>
     mutate(percent_fifty = n/total_hh * 100)                                                                            #calculate the percentage of 50% hh in each ct band
 
-plot_hh_types(hh_fifty, hh_fifty$percent_fifty,"#bf1f6b", 1, "Percentage of 50% discount households (%)",               #plot data: fifty percent discount 
+plot_hh_types(hh_fifty, hh_fifty$percent_fifty,"#bf1f6b", 1, "Percentage of households in each band with a 50% discount (%)",               #plot data: fifty percent discount 
                 "hhdist_plots\\fiftydis_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\fiftydis_hh.png")
 write.csv(hh_fifty, 'data_output\\fifty_dis_hh.csv')                                                                    #save the data use to draw the graphs 
@@ -133,7 +133,7 @@ hh_renters <- left_join(hh_renters, house_total, by = 'CTBAND')                 
 hh_renters <- hh_renters |>
     mutate(percent_renters = n/total_hh * 100)                                                                          #calculate the percentage that are renters
 
-plot_hh_types(hh_renters, hh_renters$percent_renters,"#d62d60", 60, "Percentage of rented households (%)",              #plot data: renters
+plot_hh_types(hh_renters, hh_renters$percent_renters,"#d62d60", 60, "Percentage of households in each band occupied by renters (%)",              #plot data: renters
                 "hhdist_plots\\renters_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\renters_hh.png")
 
@@ -154,6 +154,6 @@ hh_owners <- left_join(hh_owners, house_total, by = 'CTBAND')                   
 hh_owners <- hh_owners |>
     mutate(percent_owners = n/total_hh * 100)                                                                           #calculate the percentage that are owners
 
-plot_hh_types(hh_owners, hh_owners$percent_owners,"#d62d60", 100, "Percentage of owned households (%)",                 #plot data: owners
+plot_hh_types(hh_owners, hh_owners$percent_owners,"#d62d60", 100, "Percentage of households in each band occupied by owners (%)",                 #plot data: owners
                 "hhdist_plots\\owners_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\owners_hh.png")
