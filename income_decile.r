@@ -12,7 +12,9 @@ ct_pay <- househol_raw |>
     filter(!GVTREGN %in% as.numeric(not_eng)) |>                                                    #filter out non-england regions
     filter(!CTANNUAL == -1, !CTANNUAL == -9, !HHINC <= 0)|>                                           #rm non inputs or errors
     arrange(HHINC)
-
+nrow(househol_raw |>
+    select(SERNUM, GVTREGN, HHINC, CTANNUAL) |>                                                     #select region, household income and annual ct payments from the frs data
+    filter(!GVTREGN %in% as.numeric(not_eng)))
 
 #### for loop to calculate decil bins ####
 i <- 1
@@ -35,8 +37,7 @@ ct_pay <- ct_pay |>
 
 ct_pay <- ct_pay |>
     mutate(percentage = CTANNUAL/HHINC)|>                                                               #calculate percentage of yearly household income annual CT is 
-    filter(!percentage >= 1 )                                                                           #remove households who report spending more than their income in CT
-
+    
 ct_pay_sum <- ct_pay |>
     summarise(HHINC = sum(HHINC), CTANNUAL = sum(CTANNUAL)) |>                                          #sum the households income and annual ct of each income decile
     mutate(percentage = CTANNUAL/HHINC*100)                                                             #multiplke by 100
@@ -78,16 +79,7 @@ view(tail(ct_pay))
 count_decil <- count(decile)
 decile
 dec[2]-dec[1]
-view(dec)
-441*2
-441*3
-441*4
-441*5
-441*6
-441*7
-441*8
-441*9
-441*10
+
 decile_factor <- as.factor(decile) 
 str(decile_factor)
 count(decile_factor)
