@@ -1,4 +1,5 @@
-letter numebr change
+#draws grahps of the regional distribution of hh income by council tax band 
+#letter number change
 
 let_num <- data.frame(old_name = c("1", "2", "3", "4", "5", "6", "7", "8"),
                         new_name = c("a", "b", "c", "d", "e", "f", "g", "h"))

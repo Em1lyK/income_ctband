@@ -104,7 +104,7 @@ ggplot2::ggsave("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfe
 #call function to generate data for the graphs: over pension age households (at least one adult) 
 hh_plots(over_pension, 'percent_pen', 'pen_input')
 
-#plot the data: over pension age households (at least one adult) 
+# plot the data: over pension age households (at least one adult) 
 plot_hh_types(pen_input, pen_input$percent_pen,"#3e2272", 50, "Percentage of pensioner households (%)", 
                 "hhdist_plots\\pension_hh.png",
                 "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Desktop\\DAP Transfer\\pension_hh.png")
